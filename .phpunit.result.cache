@@ -1,0 +1,1 @@
+{"version":2,"defects":{"Tests\\Mem0Test::testListMemories":8,"Tests\\Mem0Test::testAddMemory":8,"Tests\\SerializerTest::testDeserializeMemoriesListResponse":8},"times":{"Tests\\Mem0Test::testListMemories":1.168,"Tests\\Mem0Test::testAddMemory":9.395,"Tests\\SerializerTest::testDeserializeMemoriesListResponse":0.005}}

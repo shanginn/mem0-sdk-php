@@ -1,0 +1,203 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Mem0;
+
+use Mem0\Contract\ClientInterface;
+use Mem0\Contract\SerializerInterface;
+use Mem0\DTO\AddMemoriesRequest;
+use Mem0\DTO\AddMemoryResponse;
+use Mem0\DTO\AddMemoryResponseItem;
+use Mem0\DTO\Filter;
+use Mem0\DTO\ListMemoriesRequest;
+use Mem0\DTO\Memory;
+use Mem0\DTO\Message;
+use Mem0\Enum\ApiVersion;
+use Mem0\Enum\OutputFormat;
+use Mem0\Enum\Role;
+use Mem0\Exception\Mem0ApiException;
+use Mem0\Mem0\Client;
+use Mem0\Mem0\Serializer;
+
+class Mem0
+{
+    private ClientInterface $client;
+    private SerializerInterface $serializer;
+
+    /**
+     * @param string $apiKey API Key for authentication.
+     * @param string $apiUrl Base URL for the Mem0 API.
+     * @param string|null $defaultOrgId Optional default Organization ID to use for requests.
+     * @param string|null $defaultProjectId Optional default Project ID to use for requests.
+     * @param ClientInterface|null $client Optional custom HTTP client.
+     * @param SerializerInterface|null $serializer Optional custom serializer.
+     */
+    public function __construct(
+        private readonly string  $apiKey,
+        private readonly string  $apiUrl = 'https://api.mem0.ai',
+        private readonly ?string $defaultOrgId = null,
+        private readonly ?string $defaultProjectId = null,
+        ?ClientInterface         $client = null,
+        ?SerializerInterface     $serializer = null,
+    ) {
+        $this->client = $client ?? new Client(
+            apiKey: $this->apiKey,
+            apiUrl: $this->apiUrl,
+        );
+
+        $this->serializer = $serializer ?? new Serializer();
+    }
+
+    /**
+     * Get all memories, with optional filters, pagination, and field selection.
+     * Corresponds to POST /v2/memories/
+     *
+     * @param Filter|null $filters Filters to apply to the memories. Sent in the request body.
+     * @param null|array<string> $fields A list of field names to include in the response. Sent as query parameters.
+     * @param int|null $page Page number for pagination. Default: 1. Sent as a query parameter.
+     * @param int|null $pageSize Number of items per page. Default: 100. Sent as a query parameter.
+     * @param string|null $orgId Filter memories by organization ID. Overrides client-level default. Sent in the request body.
+     * @param string|null $projectId Filter memories by project ID. Overrides client-level default. Sent in the request body.
+     *
+     * @return array<Memory> An array of Memory objects.
+     * @throws Mem0ApiException If the API returns an error (e.g., 400 Bad Request).
+     */
+    public function listMemories(
+        ?Filter $filters = null,
+        ?array $fields = null,
+        ?int $page = null,
+        ?int $pageSize = null,
+        ?string $orgId = null,
+        ?string $projectId = null
+    ): array {
+        $request = new ListMemoriesRequest(
+            filters: $filters,
+            fields: $fields,
+            orgId: $orgId ?? $this->defaultOrgId,
+            projectId: $projectId ?? $this->defaultProjectId,
+        );
+
+        $queryParams = [];
+        if ($page !== null) {
+            $queryParams['page'] = $page;
+        }
+
+        if ($pageSize !== null) {
+            $queryParams['page_size'] = $pageSize;
+        }
+
+        if ($fields !== null) {
+            $queryParams['fields'] = implode(',', $fields);
+        }
+
+        $jsonBody = $this->serializer->serialize($request);
+
+        $responseJson = $this->client->sendRequest('POST', '/v2/memories/', $jsonBody, $queryParams);
+
+        return $this->serializer->deserialize(
+            $responseJson,
+            Memory::class,
+            true
+        );
+    }
+
+    /**
+     * Processes memory input.
+     *
+     * @param string|array<Message> $messages An array of message objects representing the content of the memory.
+     * Each message object typically contains 'role' and 'content' fields,
+     * where 'role' indicates the sender (e.g., 'user', 'assistant', 'system')
+     * and 'content' contains the actual message text. This structure allows for
+     * the representation of conversations or multi-part memories.
+     * Each item is an object with string properties.
+     * @param string|null $agentId The unique identifier of the agent associated with this memory.
+     * @param string|null $userId The unique identifier of the user associated with this memory.
+     * @param string|null $appId The unique identifier of the application associated with this memory.
+     * @param string|null $runId The unique identifier of the run associated with this memory.
+     * @param object|null $metadata Additional metadata associated with the memory, which can be used
+     * to store any additional information or context about the memory.
+     * Best practice for incorporating additional information is through
+     * metadata (e.g. location, time, ids, etc.). During retrieval, you can
+     * either use these metadata alongside the query to fetch relevant
+     * memories or retrieve memories based on the query first and then
+     * refine the results using metadata during post-processing.
+     * @param string|null $includes String to include the specific preferences in the memory. (minLength: 1)
+     * @param string|null $excludes String to exclude the specific preferences in the memory. (minLength: 1)
+     * @param bool $infer Whether to infer the memories or directly store the messages. Defaults to true.
+     * @param OutputFormat|null $outputFormat It two output formats: v1.0 (default) and v1.1.
+     * We recommend using v1.1 as v1.0 will be deprecated soon. Defaults to "v1.0".
+     * @param object|null $customCategories A list of categories with category name and its description.
+     * @param string|null $customInstructions Defines project-specific guidelines for handling and organizing
+     * memories. When set at the project level, they apply to all new
+     * memories in that project.
+     * @param bool $immutable Whether the memory is immutable. Defaults to false.
+     * @param int|null $timestamp The timestamp of the memory. Format: Unix timestamp.
+     * @param \DateTimeInterface|null $expirationDate The date and time when the memory will expire. Format: YYYY-MM-DD.
+     * @param string|null $orgId The unique identifier of the organization associated with this memory.
+     * @param string|null $projectId The unique identifier of the project associated with this memory.
+     * @param ApiVersion|null $version The version of the memory to use. The default version is v1,
+     * which is deprecated. We recommend using v2 for new applications.
+     *
+     * @return array<AddMemoryResponseItem>
+     */
+    function addMemory(
+        string|array $messages = null,
+        ?string $agentId = null,
+        ?string $userId = null,
+        ?string $appId = null,
+        ?string $runId = null,
+        ?object $metadata = null,
+        ?string $includes = null,
+        ?string $excludes = null,
+        bool $infer = true,
+        ?object $customCategories = null,
+        ?string $customInstructions = null,
+        bool $immutable = false,
+        ?int $timestamp = null,
+        ?\DateTimeInterface $expirationDate = null,
+        ?string $orgId = null,
+        ?string $projectId = null,
+    ): array
+    {
+        if (($agentId ?? $userId ?? $appId ?? $runId) === null) {
+            throw new Mem0ApiException('At least one of the filters: agentId, userId, appId, runId is required');
+        }
+
+        if (is_string($messages)) {
+            $messages = [new Message(
+                role: Role::USER,
+                content: $messages
+            )];
+        }
+
+        $payload = new AddMemoriesRequest(
+            messages: $messages,
+            agentId: $agentId,
+            userId: $userId,
+            appId: $appId,
+            runId: $runId,
+            metadata: $metadata,
+            includes: $includes,
+            excludes: $excludes,
+            infer: $infer,
+            outputFormat: OutputFormat::V1_1,
+            customCategories: $customCategories,
+            customInstructions: $customInstructions,
+            immutable: $immutable,
+            timestamp: $timestamp,
+            expirationDate: $expirationDate,
+            orgId: $orgId ?? $this->defaultOrgId,
+            projectId: $projectId ?? $this->defaultProjectId,
+            version: ApiVersion::V2
+        );
+
+        $jsonBody = $this->serializer->serialize($payload);
+
+        $responseJson = $this->client->sendRequest('POST', '/v1/memories/', $jsonBody);
+
+        $response = $this->serializer->deserialize($responseJson, AddMemoryResponse::class);
+
+        return $response->results;
+    }
+}
