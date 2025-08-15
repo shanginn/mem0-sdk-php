@@ -115,7 +115,7 @@ class Mem0
      * @param string|null $userId The unique identifier of the user associated with this memory.
      * @param string|null $appId The unique identifier of the application associated with this memory.
      * @param string|null $runId The unique identifier of the run associated with this memory.
-     * @param object|null $metadata Additional metadata associated with the memory, which can be used
+     * @param array|null $metadata Additional metadata associated with the memory, which can be used
      * to store any additional information or context about the memory.
      * Best practice for incorporating additional information is through
      * metadata (e.g. location, time, ids, etc.). During retrieval, you can
@@ -127,7 +127,7 @@ class Mem0
      * @param bool $infer Whether to infer the memories or directly store the messages. Defaults to true.
      * @param OutputFormat|null $outputFormat It two output formats: v1.0 (default) and v1.1.
      * We recommend using v1.1 as v1.0 will be deprecated soon. Defaults to "v1.0".
-     * @param object|null $customCategories A list of categories with category name and its description.
+     * @param array|null $customCategories A list of categories with category name and its description.
      * @param string|null $customInstructions Defines project-specific guidelines for handling and organizing
      * memories. When set at the project level, they apply to all new
      * memories in that project.
@@ -141,17 +141,17 @@ class Mem0
      *
      * @return array<AddMemoryResponseItem>
      */
-    function addMemory(
+    public function addMemory(
         string|array $messages = null,
         ?string $agentId = null,
         ?string $userId = null,
         ?string $appId = null,
         ?string $runId = null,
-        ?object $metadata = null,
+        ?array $metadata = null,
         ?string $includes = null,
         ?string $excludes = null,
         bool $infer = true,
-        ?object $customCategories = null,
+        ?array $customCategories = null,
         ?string $customInstructions = null,
         bool $immutable = false,
         ?int $timestamp = null,
