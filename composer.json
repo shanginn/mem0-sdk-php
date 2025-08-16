@@ -3,7 +3,7 @@
     "description": "Memory for AI Agents; SOTA in AI Agent Memory;",
     "type": "library",
     "license": "Apache-2.0",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "autoload": {
         "psr-4": {
             "Mem0\\": "src/"
