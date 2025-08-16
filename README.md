@@ -70,7 +70,7 @@ if (!$apiKey) {
 $mem0 = new Mem0($apiKey);
 
 // Add a simple memory
-$response = $mem0->addMemory(
+$response = $mem0->add(
     messages: "Hi, my name is Alice and I love hiking",
     userId: 'user-123'
 );
@@ -87,7 +87,7 @@ The `addMemory()` method supports both simple string messages and complex conver
 
 ```php
 // Simple text memory
-$mem0->addMemory(
+$mem0->add(
     messages: "I prefer vegetarian restaurants",
     userId: 'user-123'
 );
@@ -99,14 +99,14 @@ $messages = [
     new Message(Role::USER, "Perfect for a bike ride!")
 ];
 
-$response = $mem0->addMemory(
+$response = $mem0->add(
     messages: $messages,
     userId: 'user-123',
     metadata: ['location' => 'San Francisco', 'activity' => 'cycling']
 );
 
 // Memory with expiration and custom instructions
-$mem0->addMemory(
+$mem0->add(
     messages: "Temporary project preferences",
     userId: 'user-123',
     expirationDate: new DateTime('2024-12-31'),

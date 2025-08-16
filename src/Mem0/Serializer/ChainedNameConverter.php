@@ -18,7 +18,7 @@ class ChainedNameConverter implements NameConverterInterface
     {
     }
 
-    public function normalize(string $propertyName, string $class = null, string $format = null, array $context = []): string
+    public function normalize(string $propertyName, ?string $class = null, ?string $format = null, array $context = []): string
     {
         foreach ($this->nameConverters as $nameConverter) {
             $propertyName = $nameConverter->normalize($propertyName, $class, $format, $context);
@@ -27,7 +27,7 @@ class ChainedNameConverter implements NameConverterInterface
         return $propertyName;
     }
 
-    public function denormalize(string $propertyName, string $class = null, string $format = null, array $context = []): string
+    public function denormalize(string $propertyName, ?string $class = null, ?string $format = null, array $context = []): string
     {
         foreach ($this->nameConverters as $nameConverter) {
             $propertyName = $nameConverter->denormalize($propertyName, $class, $format, $context);

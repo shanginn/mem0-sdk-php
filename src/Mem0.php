@@ -13,6 +13,7 @@ use Mem0\DTO\Filter;
 use Mem0\DTO\ListMemoriesRequest;
 use Mem0\DTO\Memory;
 use Mem0\DTO\Message;
+use Mem0\DTO\SearchMemoriesRequest;
 use Mem0\Enum\ApiVersion;
 use Mem0\Enum\OutputFormat;
 use Mem0\Enum\Role;
@@ -141,8 +142,8 @@ class Mem0
      *
      * @return array<AddMemoryResponseItem>
      */
-    public function addMemory(
-        string|array $messages = null,
+    public function add(
+        null|string|array $messages = null,
         ?string $agentId = null,
         ?string $userId = null,
         ?string $appId = null,
@@ -199,5 +200,59 @@ class Mem0
         $response = $this->serializer->deserialize($responseJson, AddMemoryResponse::class);
 
         return $response->results;
+    }
+
+    /**
+     * Search memories based on a query and filters using the v2 search API.
+     * Supports complex logical operations (AND, OR, NOT) and comparison operators.
+     * 
+     * @param string $query The query to search for in the memory.
+     * @param Filter $filters A dictionary of filters to apply to the search. Supports logical operators (AND, OR) and comparison operators (in, gte, lte, gt, lt, ne, contains, icontains).
+     * @param int|null $topK The number of top results to return. Default: 10.
+     * @param array<string>|null $fields A list of field names to include in the response. If not provided, all fields will be returned.
+     * @param bool|null $rerank Whether to rerank the memories. Default: false.
+     * @param bool|null $keywordSearch Whether to search for memories based on keywords. Default: false.
+     * @param bool|null $filterMemories Whether to filter the memories. Default: false.
+     * @param float|null $threshold The minimum similarity threshold for returned results. Default: 0.3.
+     * @param string|null $orgId The unique identifier of the organization associated with the memory.
+     * @param string|null $projectId The unique identifier of the project associated with the memory.
+     * 
+     * @return array<Memory> An array of Memory objects matching the search criteria.
+     * @throws Mem0ApiException If the API returns an error.
+     */
+    public function search(
+        string $query,
+        Filter $filters,
+        ?int $topK = null,
+        ?array $fields = null,
+        ?bool $rerank = null,
+        ?bool $keywordSearch = null,
+        ?bool $filterMemories = null,
+        ?float $threshold = null,
+        ?string $orgId = null,
+        ?string $projectId = null
+    ): array {
+        $request = new SearchMemoriesRequest(
+            query: $query,
+            filters: $filters,
+            topK: $topK,
+            fields: $fields,
+            rerank: $rerank,
+            keywordSearch: $keywordSearch,
+            filterMemories: $filterMemories,
+            threshold: $threshold,
+            orgId: $orgId ?? $this->defaultOrgId,
+            projectId: $projectId ?? $this->defaultProjectId,
+        );
+
+        $jsonBody = $this->serializer->serialize($request);
+
+        $responseJson = $this->client->sendRequest('POST', '/v2/memories/search/', $jsonBody);
+
+        return $this->serializer->deserialize(
+            $responseJson,
+            Memory::class,
+            true
+        );
     }
 }
