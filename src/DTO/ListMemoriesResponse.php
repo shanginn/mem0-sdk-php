@@ -6,8 +6,6 @@ namespace Mem0\DTO;
 
 use Crell\Serde\Attributes\SequenceField;
 
-use Crell\Serde\Attributes as Serde;
-
 class ListMemoriesResponse
 {
     /**
@@ -16,7 +14,5 @@ class ListMemoriesResponse
     public function __construct(
         #[SequenceField(arrayType: Memory::class)]
         public array $memories = [],
-    )
-    {
-    }
+    ) {}
 }

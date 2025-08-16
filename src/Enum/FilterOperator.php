@@ -6,6 +6,10 @@ namespace Mem0\Enum;
 
 enum FilterOperator: string
 {
+    public static function gt($value): array
+    {
+        return [self::gt->value => $value];
+    }
     /** Matches if the field's value is one of the provided values. */
     case in = 'in';
 
@@ -29,9 +33,4 @@ enum FilterOperator: string
 
     /** For string fields, matches if the field contains the given substring (case-insensitive). */
     case icontains = 'icontains';
-
-    public static function gt($value): array
-    {
-        return [self::gt->value => $value];
-    }
 }

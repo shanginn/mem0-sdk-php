@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mem0\Mem0;
 
 use Crell\Serde\SerdeCommon;
+use InvalidArgumentException;
 use Mem0\Contract\SerializerInterface;
 use Mem0\Exception\DeserializationException;
 use Mem0\Mem0\Serializer\ChainedNameConverter;
@@ -29,7 +30,7 @@ class Serializer implements SerializerInterface
 
     public function __construct()
     {
-        $encoders = [new JsonEncoder()];
+        $encoders    = [new JsonEncoder()];
         $normalizers = [
             new BackedEnumNormalizer(),
             new ObjectNormalizer(
@@ -45,7 +46,7 @@ class Serializer implements SerializerInterface
             ),
             new ArrayDenormalizer(),
         ];
-        $this->serializer = new SymfonySerializer($normalizers, $encoders);
+        $this->serializer   = new SymfonySerializer($normalizers, $encoders);
         $this->deserializer = new SerdeCommon();
     }
 
@@ -63,12 +64,13 @@ class Serializer implements SerializerInterface
     /**
      * @template T
      *
-     * @param string $serialized
+     * @param string          $serialized
      * @param class-string<T> $to
-     * @param bool $isArray
+     * @param bool            $isArray
+     *
+     * @throws DeserializationException
      *
      * @return ($isArray is true ? array<T> : T)
-     * @throws DeserializationException
      */
     public function deserialize(string $serialized, string $to, bool $isArray = false): mixed
     {
@@ -76,7 +78,7 @@ class Serializer implements SerializerInterface
             $deserialized = json_decode($serialized, true);
 
             if (!is_array($deserialized)) {
-                throw new \InvalidArgumentException('Deserialized data is not an array. Serialized: ' . $serialized);
+                throw new InvalidArgumentException('Deserialized data is not an array. Serialized: ' . $serialized);
             }
 
             $result = [];

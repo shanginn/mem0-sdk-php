@@ -13,11 +13,12 @@ use Mem0\Mem0;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+
 class Mem0Test extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    private MockInterface|ClientInterface $mockClient;
+    private ClientInterface|MockInterface $mockClient;
     private Mem0 $mem0;
 
     protected function setUp(): void
@@ -44,7 +45,7 @@ class Mem0Test extends TestCase
                 ['created_at' => new FilterOperator(
                     gte: '2024-07-01',
                     lte: '2024-07-31',
-                )]
+                )],
             ],
             or: [
                 ['user_id' => 'alice'],
@@ -63,9 +64,9 @@ class Mem0Test extends TestCase
 
     public function testAddMemory(): void
     {
-        $name = self::fake()->name();
+        $name     = self::fake()->name();
         $response = $this->mem0->add(
-            messages: "Hi, my name is $name",
+            messages: "Hi, my name is {$name}",
             userId: self::fake()->uuid(),
         );
 
@@ -79,12 +80,12 @@ class Mem0Test extends TestCase
         $filters = [
             'OR' => [
                 [
-                    'user_id' => 'alice'
+                    'user_id' => 'alice',
                 ],
                 [
-                    'agent_id' => ['in' => ['travel-agent', 'sports-agent']]
-                ]
-            ]
+                    'agent_id' => ['in' => ['travel-agent', 'sports-agent']],
+                ],
+            ],
         ];
 
         $memories = $this->mem0->search(
@@ -129,16 +130,16 @@ class Mem0Test extends TestCase
         $filters = [
             'AND' => [
                 [
-                    'user_id' => 'alice'
+                    'user_id' => 'alice',
                 ],
                 [
-                    'run_id' => '*'
-                ]
-            ]
+                    'run_id' => '*',
+                ],
+            ],
         ];
 
         $memories = $this->mem0->search(
-            query: "user preferences",
+            query: 'user preferences',
             filters: $filters,
             threshold: 0.5,
             keywordSearch: true

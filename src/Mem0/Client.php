@@ -7,8 +7,10 @@ namespace Mem0\Mem0;
 use Amp\Http\Client\HttpClient;
 use Amp\Http\Client\HttpClientBuilder;
 use Amp\Http\Client\Request;
+use JsonException;
 use Mem0\Contract\ClientInterface;
 use Mem0\Exception\Mem0ApiException;
+use Throwable;
 
 class Client implements ClientInterface
 {
@@ -21,13 +23,31 @@ class Client implements ClientInterface
         $this->client = HttpClientBuilder::buildDefault();
     }
 
+    protected function extractError(string $body): ?string
+    {
+        try {
+            $data = json_decode($body, true, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return null;
+        }
+
+        if (isset($data['error'])) {
+            return $data['error'];
+        }
+
+        if (isset($data['message'])) {
+            return $data['message'];
+        }
+
+        return null;
+    }
+
     public function sendRequest(
         string $method,
         string $endpoint,
         string $body = '',
         array $queryParams = []
-    ): string
-    {
+    ): string {
         $url = "{$this->apiUrl}{$endpoint}";
 
         $request = new Request($url, $method);
@@ -45,10 +65,11 @@ class Client implements ClientInterface
 
         if ($response->getStatus() >= 300) {
             $error = null;
+
             try {
                 $buffer = $response->getBody()->buffer();
-                $error = $this->extractError($buffer);
-            }  catch (\Throwable $e) {
+                $error  = $this->extractError($buffer);
+            } catch (Throwable $e) {
                 $buffer = "No body ({$e->getMessage()})";
             }
 
@@ -71,24 +92,5 @@ class Client implements ClientInterface
         dump($buffer);
 
         return $buffer;
-    }
-
-    protected function extractError(string $body): ?string
-    {
-        try {
-            $data = json_decode($body, true, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            return null;
-        }
-
-        if (isset($data['error'])) {
-            return $data['error'];
-        }
-
-        if (isset($data['message'])) {
-            return $data['message'];
-        }
-
-        return null;
     }
 }

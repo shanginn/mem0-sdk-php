@@ -14,8 +14,8 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 final readonly class Filter
 {
     /**
-     * @param null|array<FilterOperator> $and Logical AND: an array of Filter objects that must all be true.
-     * @param null|array<FilterOperator> $or Logical OR: an array of Filter objects, one of which must be true.
+     * @param array<FilterOperator>|null $and logical AND: an array of Filter objects that must all be true
+     * @param array<FilterOperator>|null $or  logical OR: an array of Filter objects, one of which must be true
      */
     public function __construct(
         #[SerializedName('AND')]

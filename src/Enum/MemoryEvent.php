@@ -6,7 +6,7 @@ namespace Mem0\Enum;
 
 enum MemoryEvent: string
 {
-    case ADD = 'ADD';
+    case ADD    = 'ADD';
     case UPDATE = 'UPDATE';
     case DELETE = 'DELETE';
 }

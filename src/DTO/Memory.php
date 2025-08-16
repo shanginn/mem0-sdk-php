@@ -38,7 +38,5 @@ final readonly class Memory
         public ?string $agentId = null,
         public ?string $appId = null,
         public ?string $runId = null,
-    )
-    {
-    }
+    ) {}
 }

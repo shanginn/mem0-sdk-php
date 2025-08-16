@@ -9,8 +9,8 @@ use Mem0\Enum\Role;
 final readonly class Message
 {
     /**
-     * @param Role $role The role of the message author (e.g., 'user', 'assistant').
-     * @param string $content The content of the message.
+     * @param Role   $role    The role of the message author (e.g., 'user', 'assistant').
+     * @param string $content the content of the message
      */
     public function __construct(
         public Role $role,

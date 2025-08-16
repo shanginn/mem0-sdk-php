@@ -6,7 +6,7 @@ namespace Mem0\Exception;
 
 class ApiException extends Mem0Exception
 {
-    public function __construct(string $message = "", int $statusCode = 0,public mixed $errorData = null)
+    public function __construct(string $message = '', int $statusCode = 0, public mixed $errorData = null)
     {
         parent::__construct($message, $statusCode);
     }

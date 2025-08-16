@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Mem0\Mem0\Serializer;
 
-
-use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
-use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 class ChainedNameConverter implements NameConverterInterface
@@ -14,9 +11,7 @@ class ChainedNameConverter implements NameConverterInterface
     /**
      * @param array<NameConverterInterface> $nameConverters
      */
-    public function __construct(private array $nameConverters = [])
-    {
-    }
+    public function __construct(private array $nameConverters = []) {}
 
     public function normalize(string $propertyName, ?string $class = null, ?string $format = null, array $context = []): string
     {

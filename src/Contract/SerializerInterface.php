@@ -13,12 +13,13 @@ interface SerializerInterface
     /**
      * @template T
      *
-     * @param string $serialized
+     * @param string          $serialized
      * @param class-string<T> $to
-     * @param bool $isArray
+     * @param bool            $isArray
+     *
+     * @throws DeserializationException
      *
      * @return ($isArray is true ? array<T> : T)
-     * @throws DeserializationException
      */
     public function deserialize(string $serialized, string $to, bool $isArray = false): mixed;
 }

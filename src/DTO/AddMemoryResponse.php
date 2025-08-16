@@ -11,6 +11,5 @@ class AddMemoryResponse
     public function __construct(
         #[SequenceField(arrayType: AddMemoryResponseItem::class)]
         public array $results
-    ) {
-    }
+    ) {}
 }

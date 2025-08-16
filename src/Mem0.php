@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mem0;
 
+use DateTimeInterface;
 use Mem0\Contract\ClientInterface;
 use Mem0\Contract\SerializerInterface;
 use Mem0\DTO\AddMemoriesRequest;
@@ -27,20 +28,20 @@ class Mem0
     private SerializerInterface $serializer;
 
     /**
-     * @param string $apiKey API Key for authentication.
-     * @param string $apiUrl Base URL for the Mem0 API.
-     * @param string|null $defaultOrgId Optional default Organization ID to use for requests.
-     * @param string|null $defaultProjectId Optional default Project ID to use for requests.
-     * @param ClientInterface|null $client Optional custom HTTP client.
-     * @param SerializerInterface|null $serializer Optional custom serializer.
+     * @param string                   $apiKey           API Key for authentication
+     * @param string                   $apiUrl           base URL for the Mem0 API
+     * @param string|null              $defaultOrgId     optional default Organization ID to use for requests
+     * @param string|null              $defaultProjectId optional default Project ID to use for requests
+     * @param ClientInterface|null     $client           optional custom HTTP client
+     * @param SerializerInterface|null $serializer       optional custom serializer
      */
     public function __construct(
-        private readonly string  $apiKey,
-        private readonly string  $apiUrl = 'https://api.mem0.ai',
+        private readonly string $apiKey,
+        private readonly string $apiUrl = 'https://api.mem0.ai',
         private readonly ?string $defaultOrgId = null,
         private readonly ?string $defaultProjectId = null,
-        ?ClientInterface         $client = null,
-        ?SerializerInterface     $serializer = null,
+        ?ClientInterface $client = null,
+        ?SerializerInterface $serializer = null,
     ) {
         $this->client = $client ?? new Client(
             apiKey: $this->apiKey,
@@ -52,17 +53,18 @@ class Mem0
 
     /**
      * Get all memories, with optional filters, pagination, and field selection.
-     * Corresponds to POST /v2/memories/
+     * Corresponds to POST /v2/memories/.
      *
-     * @param Filter|null $filters Filters to apply to the memories. Sent in the request body.
-     * @param null|array<string> $fields A list of field names to include in the response. Sent as query parameters.
-     * @param int|null $page Page number for pagination. Default: 1. Sent as a query parameter.
-     * @param int|null $pageSize Number of items per page. Default: 100. Sent as a query parameter.
-     * @param string|null $orgId Filter memories by organization ID. Overrides client-level default. Sent in the request body.
-     * @param string|null $projectId Filter memories by project ID. Overrides client-level default. Sent in the request body.
+     * @param Filter|null        $filters   Filters to apply to the memories. Sent in the request body.
+     * @param array<string>|null $fields    A list of field names to include in the response. Sent as query parameters.
+     * @param int|null           $page      Page number for pagination. Default: 1. Sent as a query parameter.
+     * @param int|null           $pageSize  Number of items per page. Default: 100. Sent as a query parameter.
+     * @param string|null        $orgId     Filter memories by organization ID. Overrides client-level default. Sent in the request body.
+     * @param string|null        $projectId Filter memories by project ID. Overrides client-level default. Sent in the request body.
      *
-     * @return array<Memory> An array of Memory objects.
      * @throws Mem0ApiException If the API returns an error (e.g., 400 Bad Request).
+     *
+     * @return array<Memory> an array of Memory objects
      */
     public function listMemories(
         ?Filter $filters = null,
@@ -106,44 +108,44 @@ class Mem0
     /**
      * Processes memory input.
      *
-     * @param string|array<Message> $messages An array of message objects representing the content of the memory.
-     * Each message object typically contains 'role' and 'content' fields,
-     * where 'role' indicates the sender (e.g., 'user', 'assistant', 'system')
-     * and 'content' contains the actual message text. This structure allows for
-     * the representation of conversations or multi-part memories.
-     * Each item is an object with string properties.
-     * @param string|null $agentId The unique identifier of the agent associated with this memory.
-     * @param string|null $userId The unique identifier of the user associated with this memory.
-     * @param string|null $appId The unique identifier of the application associated with this memory.
-     * @param string|null $runId The unique identifier of the run associated with this memory.
-     * @param array|null $metadata Additional metadata associated with the memory, which can be used
-     * to store any additional information or context about the memory.
-     * Best practice for incorporating additional information is through
-     * metadata (e.g. location, time, ids, etc.). During retrieval, you can
-     * either use these metadata alongside the query to fetch relevant
-     * memories or retrieve memories based on the query first and then
-     * refine the results using metadata during post-processing.
-     * @param string|null $includes String to include the specific preferences in the memory. (minLength: 1)
-     * @param string|null $excludes String to exclude the specific preferences in the memory. (minLength: 1)
-     * @param bool $infer Whether to infer the memories or directly store the messages. Defaults to true.
-     * @param OutputFormat|null $outputFormat It two output formats: v1.0 (default) and v1.1.
-     * We recommend using v1.1 as v1.0 will be deprecated soon. Defaults to "v1.0".
-     * @param array|null $customCategories A list of categories with category name and its description.
-     * @param string|null $customInstructions Defines project-specific guidelines for handling and organizing
-     * memories. When set at the project level, they apply to all new
-     * memories in that project.
-     * @param bool $immutable Whether the memory is immutable. Defaults to false.
-     * @param int|null $timestamp The timestamp of the memory. Format: Unix timestamp.
-     * @param \DateTimeInterface|null $expirationDate The date and time when the memory will expire. Format: YYYY-MM-DD.
-     * @param string|null $orgId The unique identifier of the organization associated with this memory.
-     * @param string|null $projectId The unique identifier of the project associated with this memory.
-     * @param ApiVersion|null $version The version of the memory to use. The default version is v1,
-     * which is deprecated. We recommend using v2 for new applications.
+     * @param string|array<Message>  $messages           An array of message objects representing the content of the memory.
+     *                                                   Each message object typically contains 'role' and 'content' fields,
+     *                                                   where 'role' indicates the sender (e.g., 'user', 'assistant', 'system')
+     *                                                   and 'content' contains the actual message text. This structure allows for
+     *                                                   the representation of conversations or multi-part memories.
+     *                                                   Each item is an object with string properties.
+     * @param string|null            $agentId            the unique identifier of the agent associated with this memory
+     * @param string|null            $userId             the unique identifier of the user associated with this memory
+     * @param string|null            $appId              the unique identifier of the application associated with this memory
+     * @param string|null            $runId              the unique identifier of the run associated with this memory
+     * @param array|null             $metadata           Additional metadata associated with the memory, which can be used
+     *                                                   to store any additional information or context about the memory.
+     *                                                   Best practice for incorporating additional information is through
+     *                                                   metadata (e.g. location, time, ids, etc.). During retrieval, you can
+     *                                                   either use these metadata alongside the query to fetch relevant
+     *                                                   memories or retrieve memories based on the query first and then
+     *                                                   refine the results using metadata during post-processing.
+     * @param string|null            $includes           String to include the specific preferences in the memory. (minLength: 1)
+     * @param string|null            $excludes           String to exclude the specific preferences in the memory. (minLength: 1)
+     * @param bool                   $infer              Whether to infer the memories or directly store the messages. Defaults to true.
+     * @param OutputFormat|null      $outputFormat       It two output formats: v1.0 (default) and v1.1.
+     *                                                   We recommend using v1.1 as v1.0 will be deprecated soon. Defaults to "v1.0".
+     * @param array|null             $customCategories   a list of categories with category name and its description
+     * @param string|null            $customInstructions Defines project-specific guidelines for handling and organizing
+     *                                                   memories. When set at the project level, they apply to all new
+     *                                                   memories in that project.
+     * @param bool                   $immutable          Whether the memory is immutable. Defaults to false.
+     * @param int|null               $timestamp          The timestamp of the memory. Format: Unix timestamp.
+     * @param DateTimeInterface|null $expirationDate     The date and time when the memory will expire. Format: YYYY-MM-DD.
+     * @param string|null            $orgId              the unique identifier of the organization associated with this memory
+     * @param string|null            $projectId          the unique identifier of the project associated with this memory
+     * @param ApiVersion|null        $version            The version of the memory to use. The default version is v1,
+     *                                                   which is deprecated. We recommend using v2 for new applications.
      *
      * @return array<AddMemoryResponseItem>
      */
     public function add(
-        null|string|array $messages = null,
+        null|array|string $messages = null,
         ?string $agentId = null,
         ?string $userId = null,
         ?string $appId = null,
@@ -156,11 +158,10 @@ class Mem0
         ?string $customInstructions = null,
         bool $immutable = false,
         ?int $timestamp = null,
-        ?\DateTimeInterface $expirationDate = null,
+        ?DateTimeInterface $expirationDate = null,
         ?string $orgId = null,
         ?string $projectId = null,
-    ): array
-    {
+    ): array {
         if (($agentId ?? $userId ?? $appId ?? $runId) === null) {
             throw new Mem0ApiException('At least one of the filters: agentId, userId, appId, runId is required');
         }
@@ -205,20 +206,21 @@ class Mem0
     /**
      * Search memories based on a query and filters using the v2 search API.
      * Supports complex logical operations (AND, OR, NOT) and comparison operators.
-     * 
-     * @param string $query The query to search for in the memory.
-     * @param Filter $filters A dictionary of filters to apply to the search. Supports logical operators (AND, OR) and comparison operators (in, gte, lte, gt, lt, ne, contains, icontains).
-     * @param int|null $topK The number of top results to return. Default: 10.
-     * @param array<string>|null $fields A list of field names to include in the response. If not provided, all fields will be returned.
-     * @param bool|null $rerank Whether to rerank the memories. Default: false.
-     * @param bool|null $keywordSearch Whether to search for memories based on keywords. Default: false.
-     * @param bool|null $filterMemories Whether to filter the memories. Default: false.
-     * @param float|null $threshold The minimum similarity threshold for returned results. Default: 0.3.
-     * @param string|null $orgId The unique identifier of the organization associated with the memory.
-     * @param string|null $projectId The unique identifier of the project associated with the memory.
-     * 
-     * @return array<Memory> An array of Memory objects matching the search criteria.
-     * @throws Mem0ApiException If the API returns an error.
+     *
+     * @param string             $query          the query to search for in the memory
+     * @param Filter             $filters        A dictionary of filters to apply to the search. Supports logical operators (AND, OR) and comparison operators (in, gte, lte, gt, lt, ne, contains, icontains).
+     * @param int|null           $topK           The number of top results to return. Default: 10.
+     * @param array<string>|null $fields         A list of field names to include in the response. If not provided, all fields will be returned.
+     * @param bool|null          $rerank         Whether to rerank the memories. Default: false.
+     * @param bool|null          $keywordSearch  Whether to search for memories based on keywords. Default: false.
+     * @param bool|null          $filterMemories Whether to filter the memories. Default: false.
+     * @param float|null         $threshold      The minimum similarity threshold for returned results. Default: 0.3.
+     * @param string|null        $orgId          the unique identifier of the organization associated with the memory
+     * @param string|null        $projectId      the unique identifier of the project associated with the memory
+     *
+     * @throws Mem0ApiException if the API returns an error
+     *
+     * @return array<Memory> an array of Memory objects matching the search criteria
      */
     public function search(
         string $query,

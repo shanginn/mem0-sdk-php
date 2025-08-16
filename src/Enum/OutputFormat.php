@@ -6,6 +6,7 @@ namespace Mem0\Enum;
 
 /**
  * Specifies the output format for API responses, particularly for memory creation and search.
+ *
  * @see \Mem0\_Request\MemoryOptions::$outputFormat
  * @see \Mem0\_Request\SearchOptions::$outputFormat
  */
@@ -13,7 +14,7 @@ enum OutputFormat: string
 {
     /**
      * Version 1.0 output format. (Note: Python SDK warns this is deprecated).
-     * Default for `/v1/memories/search/`
+     * Default for `/v1/memories/search/`.
      */
     case V1_0 = 'v1.0';
 

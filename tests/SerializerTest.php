@@ -34,5 +34,4 @@ class SerializerTest extends TestCase
         self::assertEquals('72ab0c11-6b64-4cc3-8b82-e4ace42553bd', $result[1]->id);
         self::assertEquals('User name is Macie White', $result[0]->memory);
     }
-
 }

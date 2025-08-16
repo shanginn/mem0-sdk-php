@@ -9,9 +9,9 @@ use Mem0\Enum\MemoryEvent;
 class AddMemoryResponseItem
 {
     /**
-     * @param string $id ID of the created/affected memory.
-     * @param string $memory Contains the memory string.
-     * @param MemoryEvent $event The type of event (ADD, UPDATE, DELETE).
+     * @param string      $id     ID of the created/affected memory
+     * @param string      $memory contains the memory string
+     * @param MemoryEvent $event  the type of event (ADD, UPDATE, DELETE)
      */
     public function __construct(
         public string $id,

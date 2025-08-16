@@ -6,6 +6,7 @@ namespace Mem0\Enum;
 
 /**
  * Represents the types of events that can trigger a webhook.
+ *
  * @see \Mem0\_Request\CreateWebhookPayload::$eventTypes
  * @see \Mem0\_Request\UpdateWebhookPayload::$eventTypes
  * @see \Mem0\_Response\Webhook::$eventTypes
