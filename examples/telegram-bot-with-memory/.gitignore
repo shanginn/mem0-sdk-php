@@ -1,0 +1,5 @@
+vendor
+.env.example
+.env.prod
+.php-cs-fixer.cache
+database.sqlite

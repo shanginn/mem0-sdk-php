@@ -1,0 +1,39 @@
+{
+    "name": "shanginn/memory-bot",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Bot\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nikolai Shangin",
+            "email": "shanginn@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "phenogram/framework": "*",
+        "shanginn/openai-sdk": "*",
+        "shanginn/mem0": "*",
+        "vlucas/phpdotenv": "^5.6@dev"
+    },
+    "minimum-stability": "dev",
+    "require-dev": {
+        "symfony/var-dumper": "8.0.x-dev"
+    },
+    "repositories": [{
+        "type": "path",
+        "url": "/Users/shanginn/Projects/mem0-sdk-php",
+        "options": {
+            "symlink": true
+        }
+    }, {
+        "type": "path",
+        "url": "/Users/shanginn/Projects/openai-sdk-php",
+        "options": {
+            "symlink": true
+        }
+    }]
+}

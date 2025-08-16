@@ -1,4 +1,9 @@
-# ⚠️ UNOFFICIAL MEM0 PHP SDK
+# ⚠️⚠️⚠️ UNSUPPORTED BECAUSE THEY LIE ABOUT OPENSOURCE ⚠️⚠️⚠️
+
+These docs are ai bullshit, see the example for the working code.
+
+
+# UNOFFICIAL MEM0 PHP SDK
 
 **This is an unofficial PHP SDK for the Mem0 API. This library is not affiliated with, endorsed by, or officially supported by Mem0.**
 
